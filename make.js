@@ -52,10 +52,10 @@ readFile(process.env.npm_package_json)
             readFile(join("article", file))
               // 预处理
               .then((article) => {
-                article = article.toString().replace(".md",".html");
+                article = article.toString().replace(".md", ".html");
                 return new Promise((resolve, reject) => {
                   if (article.slice(0, 2) !== "# ") {
-                    reject();
+                    reject(`Skip ${file}`);
                   }
                   let cutedArticle = `${article
                     .split("\n")
@@ -113,6 +113,7 @@ readFile(process.env.npm_package_json)
               .then((html) =>
                 writeFile(join("dist", "article", `${filename}.html`), html)
               )
+              .catch(console.error)
           );
         });
         return Promise.all(tasks);
@@ -128,9 +129,7 @@ readFile(process.env.npm_package_json)
       })
       .then((html) => writeFile(join("dist", "index.html"), html))
       .then(() => console.log("ok"))
-      .catch((err) => {
-        throw err;
-      });
+      .catch(console.error);
   })
   .catch((err) => {
     throw err;
